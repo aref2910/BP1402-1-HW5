@@ -1,36 +1,103 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+struct Node {
+    int data;
+    struct Node* next;
+};
 
-typedef struct Node {
-  // Define the structure for a linked list node
-} Node;
-
-
-Node* createNewNode(int key) {
-// Function to create a new node
+int getListLength(struct Node* head) {
+    int length = 0;
+    while (head != NULL) {
+        length++;
+        head = head->next;
+    }
+    return length;
 }
 
-int getCount(Node* head) {
-// Function to get the count of nodes in a linked list
+struct Node* findIntersection(struct Node* list1, struct Node* list2) {
+    int len1 = getListLength(list1);
+    int len2 = getListLength(list2);
+
+    struct Node* current1 = list1;
+    struct Node* current2 = list2;
+
+    if (len1 > len2) {
+        for (int i = 0; i < len1 - len2; i++) {
+            current1 = current1->next;
+        }
+    } else {
+        for (int i = 0; i < len2 - len1; i++) {
+            current2 = current2->next;
+        }
+    }
+
+    while (current1 != NULL && current2 != NULL) {
+        if (current1 == current2) {
+            return current1;
+        }
+        current1 = current1->next;
+        current2 = current2->next;
+    }
+
+    return NULL; 
 }
 
-int getIntersectionNode(int d, Node* head1, Node* head2) {
-    // Function to get the intersection point of two linked lists
-    // Move the pointer of the longer list by 'd' nodes
-    // Traverse both lists, compare nodes
+struct Node* createNode(int data) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct Node* createList(int arr[], int n) {
+    struct Node* head = NULL;
+    struct Node* current = NULL;
+
+    for (int i = 0; i < n; i++) {
+        struct Node* newNode = createNode(arr[i]);
+        if (head == NULL) {
+            head = newNode;
+            current = head;
+        } else {
+            current->next = newNode;
+            current = newNode;
+        }
+    }
+
+    return head;
+}
+
+void displayList(struct Node* head) {
+    while (head != NULL) {
+        printf("%d -> ", head->data);
+        head = head->next;
+    }
+    printf("NULL\n");
 }
 
 // Driver program to test the above function
 int main() {
-    // List A: 1 → 2 → 3 → 4 → 5 → 6
+    int arr1[] = {1, 2, 3, 4, 5};
+    int arr2[] = {10, 9, 8, 7};
 
+    struct Node* list1 = createList(arr1, sizeof(arr1) / sizeof(arr1[0]));
+    struct Node* list2 = createList(arr2, sizeof(arr2) / sizeof(arr2[0]));
 
-    // List B: 9 → 8 → 6
+    list2->next->next->next->next = list1->next->next;
 
+    printf("list 1: ");
+    displayList(list1);
+    printf("list 2: ");
+    displayList(list2);
 
-    // Find the intersection point
+    struct Node* intersection = findIntersection(list1, list2);
 
+    if (intersection != NULL) {
+        printf("noghte taghato: %d\n", intersection->data);
+    } else {
+        printf("hich noghtei yaft nashod.\n");
+    }
 
     return 0;
 }
